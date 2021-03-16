@@ -2,6 +2,8 @@ import scrapy
 import sys
 import os
 from datetime import datetime, timedelta
+
+# здесь будет искаться модуль 'items'
 sys.path.append('D:/home/projects/galaxy/git-scraping-redom/redomspider/redomsoider/')
 
 from items import RedomItem
