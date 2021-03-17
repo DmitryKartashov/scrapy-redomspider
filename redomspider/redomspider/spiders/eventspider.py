@@ -22,9 +22,12 @@ class RedomSpider1(scrapy.Spider):
 	# соответствующих подпапках
 	main_directory = ev_settings.MAIN_DIRECTORY
 
+	cur_name_of_image = 0
+
 	def create_img_dir(self):
 		args = sys.argv[-1]
-		dir_name = args.split('.')[0]
+		meta = args.split('/')[-1]
+		dir_name = meta.split('.')[0]
 		try:
 			os.mkdir(self.main_directory+'images/')
 		except:pass
@@ -43,7 +46,8 @@ class RedomSpider1(scrapy.Spider):
 		'''
 		try:
 			args = sys.argv[-1]
-			meta = args.split('.')[0]
+			meta = args.split('/')[-1]
+			meta = meta.split('.')[0]
 			start_date,end_date,ev_types = meta.split('-')
 
 			start_date = start_date.split('_')
@@ -162,16 +166,20 @@ class RedomSpider1(scrapy.Spider):
 													'ev_description':ev_description})
 
 	def parse_image(self, response, ev_type, ev_date, ev_time, ev_place, ev_name, ev_description):
-		ev_image_path = self.image_dir+'/'+ev_name+'.jpg'
+		ev_image_path = self.image_dir+'/'+str(self.cur_name_of_image)+'.jpg'
+
+		# увеличиваем имя следующей картинки
+		self.cur_name_of_image += 1
+
 		with open(ev_image_path, 'wb') as f:
 			f.write(response.body)
 
-		if os.path.exists(ev_image_path):
-			item = RedomItem({'ev_type':ev_type,
-							'ev_date':ev_date,
-							'ev_time':ev_time,
-							'ev_place':ev_place,
-							'ev_name':ev_name,
-							'ev_description':ev_description,
-							'ev_image_path':ev_image_path})
-			yield item
+		
+		item = RedomItem({'ev_type':ev_type,
+						'ev_date':ev_date,
+						'ev_time':ev_time,
+						'ev_place':ev_place,
+						'ev_name':ev_name,
+						'ev_description':ev_description,
+						'ev_image_path':ev_image_path})
+		yield item
