@@ -8,17 +8,19 @@ sys.path.append('D:/home/projects/galaxy/git-scraping-redom/redomspider/redomsoi
 
 from items import RedomItem
 
+import eventspider_settings as ev_settings
+
 class RedomSpider1(scrapy.Spider):
 	name = 'redomspider1'
 	download_delay = 0.3
 	randomize_download_delay = True
 
 	allowed_event_types = ('parties','concerts','theater','sport','shows','exhibitions')
-	main_domain = 'https://www.redomm.ru'
+	main_domain = ev_settings.MAIN_DOMAIN
 
 	# здесь будет создаваться папка 'images', в которую бдут размещаться все скачанные картинки в 
 	# соответствующих подпапках
-	main_directory = 'D:/home/projects/galaxy/git-scraping-redom/'
+	main_directory = ev_settings.MAIN_DIRECTORY
 
 	def create_img_dir(self):
 		args = sys.argv[-1]
