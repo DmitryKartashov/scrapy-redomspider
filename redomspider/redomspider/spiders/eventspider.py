@@ -4,7 +4,7 @@ import os
 from datetime import datetime, timedelta
 
 # здесь будет искаться модуль 'items'
-sys.path.append('D:/home/projects/galaxy/git-scraping-redom/redomspider/redomsoider/')
+sys.path.append('D:/home/projects/galaxy/scraping/git-scraping-redom/redomspider/redomspider')
 
 from items import RedomItem
 
