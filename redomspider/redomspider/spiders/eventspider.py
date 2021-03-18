@@ -5,11 +5,9 @@ import sys
 import os
 from datetime import datetime, timedelta
 
-# здесь будет искаться модуль 'items'
-sys.path.append('D:/home/projects/galaxy/scraping/git-scraping-redom/redomspider/redomspider')
-
+# здесь будет искаться модуль 'items' и 'eventspider_settings'
+sys.path.append('../')
 from items import RedomItem
-
 import eventspider_settings as ev_settings
 
 class RedomSpider1(scrapy.Spider):
@@ -25,6 +23,9 @@ class RedomSpider1(scrapy.Spider):
 	main_directory = ev_settings.MAIN_DIRECTORY
 
 	cur_name_of_image = 0
+
+	def change_cmd_args(self):
+		sys.argv[-1] = ev_settings.MAIN_DIRECTORY+ sys.argv[-1]
 
 	def create_img_dir(self):
 		args = sys.argv[-1]
@@ -75,6 +76,7 @@ class RedomSpider1(scrapy.Spider):
 		Нужно пройти по всем типам событий за указанный промежуток времени.
 		'''
 		zero_giver = lambda s: '0'*(len(s)==1)+s
+		self.change_cmd_args()
 		self.image_dir = self.create_img_dir()
 		start_date,end_date,ev_types = self.get_meta()
 		delta = timedelta(hours = 24)
@@ -168,12 +170,14 @@ class RedomSpider1(scrapy.Spider):
 													'ev_description':ev_description})
 
 	def parse_image(self, response, ev_type, ev_date, ev_time, ev_place, ev_name, ev_description):
-		ev_image_path = self.image_dir+'/'+str(self.cur_name_of_image)+'.jpg'
+		ev_image_rel_path = self.image_dir+'/'+str(self.cur_name_of_image)+'.jpg'
+
+		ev_image_abs_path = os.path.abspath(ev_image_rel_path)
 
 		# увеличиваем имя следующей картинки
 		self.cur_name_of_image += 1
 
-		with open(ev_image_path, 'wb') as f:
+		with open(ev_image_abs_path, 'wb') as f:
 			f.write(response.body)
 
 		
@@ -183,5 +187,5 @@ class RedomSpider1(scrapy.Spider):
 						'ev_place':ev_place,
 						'ev_name':ev_name,
 						'ev_description':ev_description,
-						'ev_image_path':ev_image_path})
+						'ev_image_path':ev_image_abs_path})
 		yield item
