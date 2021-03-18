@@ -15,14 +15,20 @@ class RedomSpider1(scrapy.Spider):
 	download_delay = 0.3
 	randomize_download_delay = True
 
-	allowed_event_types = ('parties','concerts','theater','sport','shows','exhibitions')
+	def __init__(self, category=None, *args, **kwargs):
+        super(MySpider, self).__init__(*args, **kwargs)
 
-	main_domain = ev_settings.MAIN_DOMAIN
-	main_directory = ev_settings.MAIN_DIRECTORY
-	dir_images = ev_settings.DIR_IMAGES
-	dir_datasets = ev_settings.DIR_DATASETS
+        self.allowed_event_types = ('parties','concerts','theater','sport','shows','exhibitions')
+		self.main_domain = ev_settings.MAIN_DOMAIN
+		self.main_directory = ev_settings.MAIN_DIRECTORY
+		self.dir_images = ev_settings.DIR_IMAGES
+		self.dir_datasets = ev_settings.DIR_DATASETS
 
-	cur_name_of_image = 0
+		self.cur_name_of_image = 0
+
+		self.dir_images_day = self.create_img_dir()
+		self.start_date, self.end_date, self.ev_types = self.get_meta()
+
 
 	def create_img_dir(self):
 		args = sys.argv[-1]
@@ -78,14 +84,14 @@ class RedomSpider1(scrapy.Spider):
 		Нужно пройти по всем типам событий за указанный промежуток времени.
 		'''
 		zero_giver = lambda s: '0'*(len(s)==1)+s
-		self.dir_images_day = self.create_img_dir()
-		start_date,end_date,ev_types = self.get_meta()
-		delta = timedelta(hours = 24)
 		# /{event_type}/{year-month-day}/
 		template_page_events_for_day_url = 'https://www.redomm.ru/afisha/{}/{}/'
 		template_date = '{}-{}-{}'
-		for i in range((end_date-start_date).days+1):
-			date = start_date + i*delta
+
+		delta = timedelta(hours = 24)
+
+		for i in range((self.end_date-self.start_date).days+1):
+			date = self.start_date + i*delta
 			ev_date = template_date.format(date.year,
 										zero_giver(str(date.month)),
 										zero_giver(str(date.day)))
