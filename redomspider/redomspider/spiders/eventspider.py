@@ -16,29 +16,31 @@ class RedomSpider1(scrapy.Spider):
 	randomize_download_delay = True
 
 	allowed_event_types = ('parties','concerts','theater','sport','shows','exhibitions')
-	main_domain = ev_settings.MAIN_DOMAIN
 
-	# здесь будет создаваться папка 'images', в которую бдут размещаться все скачанные картинки в 
-	# соответствующих подпапках
+	main_domain = ev_settings.MAIN_DOMAIN
 	main_directory = ev_settings.MAIN_DIRECTORY
+	dir_images = ev_settings.DIR_IMAGES
+	dir_datasets = ev_settings.DIR_DATASETS
 
 	cur_name_of_image = 0
-
-	def change_cmd_args(self):
-		sys.argv[-1] = ev_settings.MAIN_DIRECTORY+ sys.argv[-1]
 
 	def create_img_dir(self):
 		args = sys.argv[-1]
 		meta = args.split('/')[-1]
 		dir_name = meta.split('.')[0]
-		try:
-			os.mkdir(self.main_directory+'images/')
+		try: # создаем папку для сохранения наборов данных
+			os.mkdir(self.dir_datasets)
+		except: pass
+
+		try: # создаем папку для сохранения картинок
+			os.mkdir(self.dir_images)
 		except:pass
-		image_dir = self.main_directory+'images/'+'IMAGES_'+dir_name
-		try:
-			os.mkdir(image_dir)
+		dir_images_day = self.dir_images+'IMAGES_'+dir_name
+
+		try: # создаем папку для сохранения картинок событий этого дня
+			os.mkdir(dir_images_day)
 		except:pass
-		return image_dir
+		return dir_images_day
 
 	def get_meta(self):
 		'''
@@ -76,8 +78,7 @@ class RedomSpider1(scrapy.Spider):
 		Нужно пройти по всем типам событий за указанный промежуток времени.
 		'''
 		zero_giver = lambda s: '0'*(len(s)==1)+s
-		self.change_cmd_args()
-		self.image_dir = self.create_img_dir()
+		self.dir_images_day = self.create_img_dir()
 		start_date,end_date,ev_types = self.get_meta()
 		delta = timedelta(hours = 24)
 		# /{event_type}/{year-month-day}/
@@ -170,7 +171,7 @@ class RedomSpider1(scrapy.Spider):
 													'ev_description':ev_description})
 
 	def parse_image(self, response, ev_type, ev_date, ev_time, ev_place, ev_name, ev_description):
-		ev_image_rel_path = self.image_dir+'/'+str(self.cur_name_of_image)+'.jpg'
+		ev_image_rel_path = self.dir_images_day+'/'+str(self.cur_name_of_image)+'.jpg'
 
 		ev_image_abs_path = os.path.abspath(ev_image_rel_path)
 
