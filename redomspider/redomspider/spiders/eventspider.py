@@ -17,7 +17,6 @@ class RedomSpider1(scrapy.Spider):
 
 	def __init__(self, category=None, *args, **kwargs):
 		super(RedomSpider1, self).__init__(*args, **kwargs)
-
 		self.allowed_event_types = ('parties','concerts','theater','sport','shows','exhibitions')
 		self.main_domain = ev_settings.MAIN_DOMAIN
 		self.main_directory = ev_settings.MAIN_DIRECTORY
