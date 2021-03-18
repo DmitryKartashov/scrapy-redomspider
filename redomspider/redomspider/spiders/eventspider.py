@@ -16,9 +16,9 @@ class RedomSpider1(scrapy.Spider):
 	randomize_download_delay = True
 
 	def __init__(self, category=None, *args, **kwargs):
-        super(MySpider, self).__init__(*args, **kwargs)
+		super(RedomSpider1, self).__init__(*args, **kwargs)
 
-        self.allowed_event_types = ('parties','concerts','theater','sport','shows','exhibitions')
+		self.allowed_event_types = ('parties','concerts','theater','sport','shows','exhibitions')
 		self.main_domain = ev_settings.MAIN_DOMAIN
 		self.main_directory = ev_settings.MAIN_DIRECTORY
 		self.dir_images = ev_settings.DIR_IMAGES
@@ -95,7 +95,7 @@ class RedomSpider1(scrapy.Spider):
 			ev_date = template_date.format(date.year,
 										zero_giver(str(date.month)),
 										zero_giver(str(date.day)))
-			for ev_type in ev_types:
+			for ev_type in self.ev_types:
 				page_events_for_day_url = template_page_events_for_day_url.format(ev_type,ev_date)
 				yield scrapy.Request(url = page_events_for_day_url,
 									callback = self.parse_events_page,
