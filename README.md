@@ -28,18 +28,18 @@
 
 ## Структура проекта
 
-scrapy-redomspider/
-	.gitignore
-	README.md
-	datasets/ #создастся после первого запуска
-	images/ #создастся после первого запуска
-	redomspider/
-		scrapy.cfg
-		redomspider/
-			spiders/
-				eventspider.py
-			eventspider_settings.py
-			items.py
-			middlewares.py
-			pipelines.py
-			settings.py
+- scrapy-redomspider/
+	- .gitignore
+	- README.md
+	- datasets/ #создастся после первого запуска
+	- images/ #создастся после первого запуска
+	- redomspider/
+		- scrapy.cfg
+		- redomspider/
+			- spiders/
+				- eventspider.py
+			- eventspider_settings.py
+			- items.py
+			- middlewares.py
+			- pipelines.py
+			- settings.py
