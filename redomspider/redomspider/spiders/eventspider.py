@@ -15,7 +15,10 @@ class RedomSpider1(scrapy.Spider):
 	download_delay = 0.3
 	randomize_download_delay = True
 
-	def __init__(self, category=None, *args, **kwargs):
+	def __init__(self, 
+				start_date=None,
+				end_date=None,
+				types=None, *args, **kwargs):
 		super(RedomSpider1, self).__init__(*args, **kwargs)
 		self.allowed_event_types = ('parties','concerts','theater','sport','shows','exhibitions')
 		self.main_domain = ev_settings.MAIN_DOMAIN
@@ -26,7 +29,9 @@ class RedomSpider1(scrapy.Spider):
 		self.cur_name_of_image = 0
 
 		self.dir_images_day = self.create_img_dir()
-		self.start_date, self.end_date, self.ev_types = self.get_meta()
+		self.start_date = start_date
+		self.end_date = end_date
+		self.ev_types = types
 
 
 	def create_img_dir(self):
