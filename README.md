@@ -10,21 +10,31 @@
 		git init
 3. Клонируйте репозиторий:
 		git clone https://github.com/DmitryKartashov/scrapy-redomspider.git
-4. Запускайте паука следующим образом:
-		scrapy runspider eventspider.py -o ../../../datasets/YYYY_M_D-YYYY_M_D-ALL.json
 
-	Где YYYY_M_D-YYYY_M_D  -  начало и конец временного интервала, внутри
+4. В файле eventspider_settings.py настроить следующие параметры
+	- DB_NAME = 'galaxy'
+	- DB_USER = 'postgres'
+	- DB_PASSWORD = 'admin'
+	- DB_HOST ='::1'
+	- DB_PORT = '5432'
+	host и port можно узнать, введя в SQL shell следующие команды:
+			- \c db_name //тут вместо db_name вставить название базы данных
+			- \conninfo
+5. Запускайте паука следующим образом:
+		scrapy crawl redomspider -a start_date="YYYY_M_D" -a end_date="YYYY_M_D" -a types="type1_type2_typeN"
+
+	Где start_date, end_date  -  начало и конец временного интервала, внутри
 								которого будет проводиться поиск событий
 
-	ALL  -  это типы событий, которые нас интересуют.
+	types  -  это типы событий, которые нас интересуют.
+			Если types="ALL", то будут искаться все типы событий.
 			Вместо ALL можно через нижнее подчеркивание перечислить
 			типы из списка: 
 				('parties','concerts','theater','sport','shows','exhibitions')
 	Например: 
-		../../../datasets/2021_3_10-2021_3_24-concerts_shows_theater.csv
+		scrapy crawl redomspider -a start_date="2021_2_1" -a end_date="2021_2_28" -a types="parties_shows"
 
-5. Фотографии событий сохранятся в папке images,
-	датасет будет загружен в папку datasets.
+6. Фотографии событий сохранятся в папке images
 
 ## Структура проекта
 

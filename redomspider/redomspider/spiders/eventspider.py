@@ -10,16 +10,16 @@ sys.path.append('../')
 from items import RedomItem
 import eventspider_settings as ev_settings
 
-class RedomSpider1(scrapy.Spider):
-	name = 'redomspider1'
-	download_delay = 0.3
+class RedomSpider(scrapy.Spider):
+	name = 'redomspider'
+	download_delay = 0.5
 	randomize_download_delay = True
 
 	def __init__(self, 
 				start_date=None,
 				end_date=None,
 				types=None, *args, **kwargs):
-		super(RedomSpider1, self).__init__(*args, **kwargs)
+		super(RedomSpider, self).__init__(*args, **kwargs)
 		self.allowed_event_types = ('parties','concerts','theater','sport','shows','exhibitions')
 		self.main_domain = ev_settings.MAIN_DOMAIN
 		self.main_directory = ev_settings.MAIN_DIRECTORY
@@ -28,31 +28,23 @@ class RedomSpider1(scrapy.Spider):
 
 		self.cur_name_of_image = 0
 
-		self.dir_images_day = self.create_img_dir()
-		self.start_date = start_date
-		self.end_date = end_date
-		self.ev_types = types
+		self.start_date,self.end_date,self.ev_types = self.get_meta(start_date,end_date,types)
+		self.dir_images_period = self.create_dir_img_period(start_date,end_date,types)
 
-
-	def create_img_dir(self):
-		args = sys.argv[-1]
-		meta = args.split('/')[-1]
-		dir_name = meta.split('.')[0]
-		try: # создаем папку для сохранения наборов данных
-			os.mkdir(self.dir_datasets)
-		except: pass
+	def create_dir_img_period(self,start_date,end_date,types):
+		dir_name = start_date+' - '+end_date
 
 		try: # создаем папку для сохранения картинок
 			os.mkdir(self.dir_images)
 		except:pass
-		dir_images_day = self.dir_images+'IMAGES_'+dir_name
+		dir_images_period = self.dir_images+'IMAGES_'+dir_name
 
-		try: # создаем папку для сохранения картинок событий этого дня
-			os.mkdir(dir_images_day)
+		try: # создаем папку для сохранения картинок событий этого периода
+			os.mkdir(dir_images_period)
 		except:pass
-		return dir_images_day
+		return dir_images_period
 
-	def get_meta(self):
+	def get_meta(self,start_date,end_date,ev_types):
 		'''
 		Syear_Smonth_Sday-Eyear_Emonth_Eday-type1_type2_..._tipeN(or ALL).json(or csv)
 
@@ -60,11 +52,6 @@ class RedomSpider1(scrapy.Spider):
 		событий, а так же типы событий, предназначенных дл парсинга.
 		'''
 		try:
-			args = sys.argv[-1]
-			meta = args.split('/')[-1]
-			meta = meta.split('.')[0]
-			start_date,end_date,ev_types = meta.split('-')
-
 			start_date = start_date.split('_')
 			start_date = datetime(int(start_date[0]),int(start_date[1]),int(start_date[2]))
 
@@ -181,7 +168,7 @@ class RedomSpider1(scrapy.Spider):
 													'ev_description':ev_description})
 
 	def parse_image(self, response, ev_type, ev_date, ev_time, ev_place, ev_name, ev_description):
-		ev_image_rel_path = self.dir_images_day+'/'+str(self.cur_name_of_image)+'.jpg'
+		ev_image_rel_path = self.dir_images_period+'/'+str(self.cur_name_of_image)+'.jpg'
 
 		ev_image_abs_path = os.path.abspath(ev_image_rel_path)
 
@@ -195,8 +182,8 @@ class RedomSpider1(scrapy.Spider):
 		item = RedomItem({'ev_type':ev_type,
 						'ev_date':ev_date,
 						'ev_time':ev_time,
-						'ev_place':ev_place,
-						'ev_name':ev_name,
-						'ev_description':ev_description,
+						'ev_place':ev_place.replace("'",' ').replace('"',' '),
+						'ev_name':ev_name.replace("'",' ').replace('"',' '),
+						'ev_description':ev_description.replace("'",' ').replace('"',' '),
 						'ev_image_path':ev_image_abs_path})
 		yield item
